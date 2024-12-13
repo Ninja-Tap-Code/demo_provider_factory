@@ -1,21 +1,28 @@
 package factories;
 
-import providers.Sendinblue;
 import providers.Provider;
-import providers.Mailchimp;
-import providers.Sendgird;
+import util.ClassScanner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ProviderFactory {
 
     private static final Map<String, Provider> providers = new HashMap<>();
 
     static {
-        providers.put("sendinblue", new Sendinblue());
-        providers.put("sendgird", new Sendgird());
-        providers.put("mailchimp", new Mailchimp());
+        try {
+            // Tìm tất cả class implement interface Provider
+            Set<Class<? extends Provider>> providerClasses = ClassScanner.findSubTypes("providers", Provider.class);
+            for (Class<? extends Provider> providerClass : providerClasses) {
+                Provider providerInstance = providerClass.getDeclaredConstructor().newInstance(); // Tạo 1 instance của lớp đó
+                String providerType = providerClass.getSimpleName().toLowerCase();
+                providers.put(providerType, providerInstance);
+            }
+        } catch (Exception e) {
+            System.out.println("[SCAN_PACKAGE] Fail: " + e.getMessage());
+        }
     }
 
     public static Provider getProvider(String providerType) {
