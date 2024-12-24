@@ -17,7 +17,6 @@ public class DemoApplication {
             provider.send(email, message);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println("[TEST CHANGE GIT GLOBAL]");
         }
     }
 }
